@@ -13,13 +13,7 @@ public class ArticleForm {
 
 
 
-    @Override
-    public String toString() {
-        return "ArticleForm{" +
-                "title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                '}';
-    }
+
 
     public Article toEntity() {
         return new Article(id,title,content);

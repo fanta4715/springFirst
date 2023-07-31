@@ -1,6 +1,7 @@
 {{>layouts/header}}
-<!--수정인데도 post로 보내는 이유-->
+<!--수정인데도 post로 보내는 이유 : form태그가 PATCH메서드를 제공하지 ㅏㄶ음 -->
 <form class="container" action="/articles/update" method="post">
+<!--    수정할 떄 id는 결국 mustache에서 보내는구나-->
     <input name="id" type="hidden" value="{{article.id}}">
     <div class="mb-3">
         <label class="form-label">제목</label>

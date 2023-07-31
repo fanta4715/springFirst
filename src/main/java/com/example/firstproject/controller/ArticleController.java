@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +92,43 @@ public class ArticleController {
     @PostMapping("/articles/update")
     public String update(ArticleForm form){
         log.info(form.toString());
-        return "";
+        //1. DTO를 엔티티로 변환하기
+        Article articleEntity=form.toEntity();
+        //2. 엔티티를 DB에 저장
+        //  기존의 엔티티를 수정해서 넣어야함
+        //2-1. DB에서 기존 데이터 가져오기
+        Article target= articleRepository.findById(articleEntity.getId()).orElse(null);
+        //2-2. 기존데이터값 갱신
+        if (target!=null){
+            articleRepository.save(articleEntity);
+        }
+        //이거는 그냥 articles/update의 주소인데 아무것도 안 띄우는 걸 의미함
+
+
+        //3. 수정 결과 페이지로 리다이렉트
+       return "redirect:/articles/"+articleEntity.getId();
+
+
     }
 
+    @GetMapping("articles/{id}/delete")
+    public String delete(@PathVariable Long id, RedirectAttributes rttr){
+        log.info("삭제 요청이 들어왔습니다!");
+//        1. 삭제할 대상 가져옴
+        Article target=articleRepository.findById(id).orElse(null);
+        log.info(target.toString());
+
+//        2. 대상 엔티티 삭제
+        if (target!=null){
+            articleRepository.delete(target);
+//            얘가 이제 msg라는 값을 가짐
+//            모델의 attribute와 비슷한데, 리다이렉트용
+            rttr.addFlashAttribute("msg","삭제됐습니다");
+        }
+//        3. 결과 페이지 리다이렉
+        //이 리턴은 "밑의 주소로 가주세요~"가 아니다.
+        //밑의 주소로 static이랑 template를 뒤져주세요다
+        //그렇기때문에, 주소를 원한다면, redirect를 해라
+        return "redirect:/articles";
+    }
 }
